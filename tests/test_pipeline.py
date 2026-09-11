@@ -9,10 +9,10 @@ from main import load_data, preprocess_data, quality_report, run
 def test_preprocess_and_quality_report():
     frame = pd.DataFrame({" Patient ID ": [1, 1, 2], "Outcome (%)": [5, 5, None]})
     cleaned, removed = preprocess_data(frame)
-    assert cleaned.columns.tolist() == ["patient_id", "outcome_"]
+    assert cleaned.columns.tolist() == ["patient_id", "outcome"]
     assert len(cleaned) == 2
     assert removed == 1
-    assert quality_report(cleaned, removed)["missing_values_by_column"]["outcome_"] == 1
+    assert quality_report(cleaned, removed)["missing_values_by_column"]["outcome"] == 1
 
 
 def test_duplicate_standardised_columns_are_rejected():
