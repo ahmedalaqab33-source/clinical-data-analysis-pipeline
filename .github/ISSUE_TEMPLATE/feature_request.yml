@@ -1,0 +1,49 @@
+name: Enhancement request
+description: Propose a scientific, reproducibility, documentation, or software improvement
+title: "[Enhancement]: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please keep proposals within the repository's transparent, privacy-aware research scope. Do not include restricted or participant-level data.
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Rationale
+      description: What problem would this change solve, and why is it useful?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Describe the requested change clearly.
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Documentation
+        - Reproducibility
+        - Data quality
+        - Testing / CI
+        - Software design
+        - Statistical / analytical scope
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation plan
+      description: How should the change be checked or tested?
+  - type: checkboxes
+    id: scientific
+    attributes:
+      label: Scientific-scope check
+      options:
+        - label: I understand that changes to variable definitions, methods, estimands, inclusion criteria, or interpretation require explicit scientific justification and documentation.
+          required: true
