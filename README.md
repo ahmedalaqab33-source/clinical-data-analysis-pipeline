@@ -1,5 +1,10 @@
 # Clinical Data Analysis Pipeline
 
+[![CI](https://github.com/ahmedalaqab33-source/clinical-data-analysis-pipeline/actions/workflows/quality-checks.yml/badge.svg)](https://github.com/ahmedalaqab33-source/clinical-data-analysis-pipeline/actions/workflows/quality-checks.yml)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![ORCID](https://img.shields.io/badge/ORCID-0009--0000--3586--3242-A6CE39?logo=orcid&logoColor=white)](https://orcid.org/0009-0000-3586-3242)
+
 A small, reproducible Python workflow for tabular clinical-research data quality checks and descriptive summaries. It is designed as a transparent starting point—not as a validated clinical decision system.
 
 ## Purpose
@@ -24,6 +29,10 @@ data/README.md                  Safe local data instructions
 outputs/README.md               Generated-output description
 tests/test_pipeline.py          Unit and smoke tests
 ```
+
+## Quality assurance
+
+Every push to `main` and every pull request is checked automatically with GitHub Actions. The quality workflow installs the development dependencies, runs Ruff static checks, and executes the pytest suite. The repository also includes contribution, security, citation, changelog, and reproducibility documentation.
 
 ## Requirements
 
