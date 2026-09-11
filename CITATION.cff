@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this research workflow, please cite the software using this metadata."
+title: "Clinical Data Analysis Pipeline"
+type: software
+authors:
+  - family-names: "Alaqab"
+    given-names: "Ahmed"
+    orcid: "https://orcid.org/0009-0000-3586-3242"
+repository-code: "https://github.com/ahmedalaqab33-source/clinical-data-analysis-pipeline"
+license: MIT
+version: 0.1.0
+date-released: 2026-09-11
