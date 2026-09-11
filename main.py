@@ -1,64 +1,110 @@
-from pathlib import Path
+"""Reproducible descriptive workflow for locally supplied tabular research data."""
+
+from __future__ import annotations
+
+import argparse
+import json
 import logging
+import os
+from pathlib import Path
 
 import pandas as pd
 
-
-BASE_DIR = Path(__file__).resolve().parent
-DATA_PATH = BASE_DIR / "data" / "sample" / "clinical_sample.csv"
-OUTPUT_DIR = BASE_DIR / "outputs"
+LOGGER = logging.getLogger(__name__)
+DEFAULT_OUTPUT_DIR = Path("outputs")
 
 
-def configure_logging():
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s | %(levelname)s | %(message)s"
+def configure_logging() -> None:
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--data",
+        type=Path,
+        default=os.getenv("CLINICAL_DATA_PATH"),
+        help="Path to a local CSV file; alternatively set CLINICAL_DATA_PATH.",
     )
+    parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    return parser.parse_args()
 
 
-def load_data(path):
-    if not path.exists():
-        raise FileNotFoundError(f"Dataset not found: {path}")
-    return pd.read_csv(path)
+def load_data(path: Path) -> pd.DataFrame:
+    if not path.is_file():
+        raise FileNotFoundError(f"Dataset not found or not a file: {path}")
+    frame = pd.read_csv(path)
+    if frame.empty:
+        raise ValueError("The input dataset contains no data rows.")
+    return frame
 
 
-def preprocess_data(df):
-    df = df.copy()
-    df.columns = (
-        df.columns
+def standardise_column_names(columns: pd.Index) -> list[str]:
+    cleaned = (
+        columns.astype(str)
         .str.strip()
         .str.lower()
         .str.replace(r"\s+", "_", regex=True)
         .str.replace(r"[^a-z0-9_]", "", regex=True)
+        .str.strip("_")
+        .tolist()
     )
-    df = df.drop_duplicates()
-    return df
+    if any(not name for name in cleaned):
+        raise ValueError("At least one column name is empty after standardisation.")
+    if len(cleaned) != len(set(cleaned)):
+        raise ValueError("Column-name standardisation produced duplicate names.")
+    return cleaned
 
 
-def run_analysis(df):
-    summary = df.describe(include="all").transpose()
-    return summary
+def preprocess_data(frame: pd.DataFrame) -> tuple[pd.DataFrame, int]:
+    cleaned = frame.copy()
+    cleaned.columns = standardise_column_names(cleaned.columns)
+    before = len(cleaned)
+    cleaned = cleaned.drop_duplicates().reset_index(drop=True)
+    return cleaned, before - len(cleaned)
 
 
-def save_results(summary):
-    output_file = OUTPUT_DIR / "descriptive_summary.csv"
-    summary.to_csv(output_file)
-    logging.info(f"Results saved to {output_file}")
+def describe_data(frame: pd.DataFrame) -> pd.DataFrame:
+    return frame.describe(include="all").transpose()
 
 
-def main():
+def quality_report(frame: pd.DataFrame, duplicates_removed: int) -> dict[str, object]:
+    return {
+        "rows_after_preprocessing": int(len(frame)),
+        "columns": int(frame.shape[1]),
+        "duplicates_removed": int(duplicates_removed),
+        "missing_values_by_column": {key: int(value) for key, value in frame.isna().sum().items()},
+    }
+
+
+def save_results(
+    summary: pd.DataFrame,
+    report: dict[str, object],
+    output_dir: Path,
+) -> None:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    summary.to_csv(output_dir / "descriptive_summary.csv")
+    (output_dir / "quality_control.json").write_text(
+        json.dumps(report, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def run(data_path: Path, output_dir: Path) -> None:
+    frame = load_data(data_path)
+    cleaned, duplicates_removed = preprocess_data(frame)
+    save_results(describe_data(cleaned), quality_report(cleaned, duplicates_removed), output_dir)
+
+
+def main() -> None:
     configure_logging()
-    logging.info("Starting clinical data analysis pipeline")
-
-    df = load_data(DATA_PATH)
-    df = preprocess_data(df)
-    summary = run_analysis(df)
-    save_results(summary)
-
-    logging.info("Pipeline completed successfully")
+    args = parse_args()
+    if args.data is None:
+        raise SystemExit("Provide --data PATH or set CLINICAL_DATA_PATH.")
+    LOGGER.info("Starting analysis with local input: %s", args.data)
+    run(Path(args.data), args.output_dir)
+    LOGGER.info("Pipeline completed; outputs written to %s", args.output_dir)
 
 
 if __name__ == "__main__":
     main()
-  
