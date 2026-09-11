@@ -16,7 +16,7 @@ def test_preprocess_and_quality_report():
 
 
 def test_duplicate_standardised_columns_are_rejected():
-    frame = pd.DataFrame([[1, 2]], columns=["Patient ID", "patient-id"])
+    frame = pd.DataFrame([[1, 2]], columns=["Patient ID", "patient_id"])
     with pytest.raises(ValueError, match="duplicate"):
         preprocess_data(frame)
 
