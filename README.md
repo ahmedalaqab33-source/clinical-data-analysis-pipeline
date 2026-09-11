@@ -28,7 +28,8 @@ tests/test_pipeline.py          Unit and smoke tests
 ## Requirements
 
 - Python 3.10 or later
-- Packages in `requirements.txt`
+- Runtime packages in `requirements.txt`
+- Quality-control packages in `requirements-dev.txt`
 
 ## Reproduce
 
@@ -36,8 +37,9 @@ tests/test_pipeline.py          Unit and smoke tests
 python -m venv .venv
 # Windows: .venv\Scripts\activate
 # macOS/Linux: source .venv/bin/activate
-python -m pip install -r requirements.txt
-pytest
+python -m pip install -r requirements-dev.txt
+python -m ruff check .
+python -m pytest
 python main.py --data /path/to/local/input.csv --output-dir outputs
 ```
 
@@ -54,9 +56,15 @@ Outputs may contain sensitive aggregates or labels. Review them before sharing.
 
 This repository contains code and documentation only. Users must obtain and store data in accordance with ethics approvals, data-use agreements, institutional policy, and applicable law. Raw clinical, hospital, claims, EHR, or participant-level data must not be committed.
 
+Security and responsible-disclosure guidance is provided in [SECURITY.md](SECURITY.md).
+
 ## Scope and limitations
 
 This educational research workflow performs generic preprocessing and descriptive analysis. It does not select a study design, handle confounding or missingness, fit inferential models, validate clinical predictions, or establish causal or clinical conclusions. Adaptations require protocol-specific statistical review.
+
+## Contributing
+
+Scientific and technical contributions are welcome when they preserve privacy and transparent scope. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Citation
 
@@ -68,7 +76,7 @@ See [CITATION.cff](CITATION.cff). No publication DOI is claimed for this reposit
 PhD Candidate, University of Cyberjaya, Malaysia  
 Clinical Pharmacy · Clinical Data Analysis · Digital Health · Health Informatics · Real-World Evidence · Responsible AI in Healthcare
 
-[ORCID](https://orcid.org/0009-0000-3586-3242) · [GitHub](https://github.com/ahmedalaqab33-source)
+[ORCID](https://orcid.org/0009-0000-3586-3242) · [Google Scholar](https://scholar.google.com/citations?user=swC2GY8AAAAJ) · [ResearchGate](https://www.researchgate.net/profile/Ahmed-Alaqab-2) · [LinkedIn](https://www.linkedin.com/in/ahmed-riyadh-alaqab-71377a25/) · [GitHub](https://github.com/ahmedalaqab33-source)
 
 ## License
 
