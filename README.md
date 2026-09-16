@@ -12,9 +12,9 @@ A small, reproducible Python workflow for tabular clinical-research data quality
 The workflow:
 
 - reads a locally supplied CSV file;
-- standardises column names and removes exact duplicate rows;
+- standardises column names and preserves all observations by default;
 - checks that the dataset is non-empty and has unique column names;
-- reports row, column, duplicate-removal, and missing-value counts;
+- reports row, column, detected-duplicate, duplicate-removal, and missing-value counts;
 - writes a descriptive summary and a machine-readable quality-control report.
 
 No patient-level or restricted dataset is included.
@@ -53,6 +53,12 @@ python main.py --data /path/to/local/input.csv --output-dir outputs
 ```
 
 Alternatively, set `CLINICAL_DATA_PATH` instead of passing `--data`.
+
+Exact duplicate rows are retained because repeated observations may be legitimate.
+Use `--drop-exact-duplicates` only when the study protocol justifies removal.
+The QC report records the selected policy, input row count, detected duplicates
+(occurrences after the first identical row), and removals. The source CSV is never edited.
+CSV headers are checked before parsing so duplicate names cannot be silently renamed.
 
 ## Expected outputs
 

@@ -2,6 +2,13 @@
 
 All notable changes to this repository are documented here.
 
+## Unreleased
+
+- Preserve identical observations by default; require `--drop-exact-duplicates` for removal.
+- Record input counts, detected duplicates, removals, and the selected policy in QC output.
+- Reject ambiguous CSV headers before pandas can rename them.
+- Add regression tests for duplicate policies and malformed headers.
+
 ## [0.1.0] - 2026-09-11
 
 ### Added

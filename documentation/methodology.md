@@ -2,7 +2,7 @@
 
 ## Processing
 
-The pipeline reads a CSV file with pandas, standardises column names, rejects ambiguous duplicate names, removes exact duplicate rows, and produces descriptive statistics.
+The pipeline checks CSV headers before pandas parsing, standardises column names, rejects ambiguous duplicate names, and produces descriptive statistics. All observations are preserved by default. Exact duplicate removal requires the explicit `--drop-exact-duplicates` option and a study-specific justification. Identical rows alone do not establish that observations are erroneous.
 
 ## Quality controls
 
@@ -11,7 +11,7 @@ It verifies that:
 - the supplied path points to a file;
 - the input has at least one data row;
 - standardised column names are non-empty and unique;
-- duplicate removal and missing-value counts are recorded;
+- input and output row counts, detected duplicates, the removal policy, removals, and missing-value counts are recorded;
 - expected output files can be generated.
 
 ## Interpretation limits
