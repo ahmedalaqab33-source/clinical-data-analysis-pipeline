@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import logging
 import os
@@ -27,12 +28,23 @@ def parse_args() -> argparse.Namespace:
         help="Path to a local CSV file; alternatively set CLINICAL_DATA_PATH.",
     )
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument(
+        "--drop-exact-duplicates",
+        action="store_true",
+        help="Remove exact duplicate rows only when justified by the study protocol.",
+    )
     return parser.parse_args()
 
 
 def load_data(path: Path) -> pd.DataFrame:
     if not path.is_file():
         raise FileNotFoundError(f"Dataset not found or not a file: {path}")
+    # Validate before pandas can rename repeated CSV headers (e.g. age -> age.1).
+    with path.open(encoding="utf-8-sig", newline="") as stream:
+        header = next(csv.reader(stream), [])
+    if not header:
+        raise ValueError("The input dataset contains no column headers.")
+    standardise_column_names(pd.Index(header))
     frame = pd.read_csv(path)
     if frame.empty:
         raise ValueError("The input dataset contains no data rows.")
@@ -56,11 +68,16 @@ def standardise_column_names(columns: pd.Index) -> list[str]:
     return cleaned
 
 
-def preprocess_data(frame: pd.DataFrame) -> tuple[pd.DataFrame, int]:
+def preprocess_data(
+    frame: pd.DataFrame,
+    *,
+    drop_exact_duplicates: bool = False,
+) -> tuple[pd.DataFrame, int]:
     cleaned = frame.copy()
     cleaned.columns = standardise_column_names(cleaned.columns)
     before = len(cleaned)
-    cleaned = cleaned.drop_duplicates().reset_index(drop=True)
+    if drop_exact_duplicates:
+        cleaned = cleaned.drop_duplicates().reset_index(drop=True)
     return cleaned, before - len(cleaned)
 
 
@@ -90,10 +107,20 @@ def save_results(
     )
 
 
-def run(data_path: Path, output_dir: Path) -> None:
+def run(data_path: Path, output_dir: Path, *, drop_exact_duplicates: bool = False) -> None:
     frame = load_data(data_path)
-    cleaned, duplicates_removed = preprocess_data(frame)
-    save_results(describe_data(cleaned), quality_report(cleaned, duplicates_removed), output_dir)
+    cleaned, duplicates_removed = preprocess_data(
+        frame, drop_exact_duplicates=drop_exact_duplicates
+    )
+    report = quality_report(cleaned, duplicates_removed)
+    report.update(
+        {
+            "rows_before_preprocessing": int(len(frame)),
+            "exact_duplicate_rows_detected": int(frame.duplicated().sum()),
+            "duplicate_policy": "drop_exact" if drop_exact_duplicates else "preserve",
+        }
+    )
+    save_results(describe_data(cleaned), report, output_dir)
 
 
 def main() -> None:
@@ -102,7 +129,7 @@ def main() -> None:
     if args.data is None:
         raise SystemExit("Provide --data PATH or set CLINICAL_DATA_PATH.")
     LOGGER.info("Starting analysis with local input: %s", args.data)
-    run(Path(args.data), args.output_dir)
+    run(Path(args.data), args.output_dir, drop_exact_duplicates=args.drop_exact_duplicates)
     LOGGER.info("Pipeline completed; outputs written to %s", args.output_dir)
 
 
