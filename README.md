@@ -88,10 +88,10 @@ See [CITATION.cff](CITATION.cff). No publication DOI is claimed for this reposit
 ## Author
 
 **Ahmed Alaqab**  
-PhD Candidate, University of Cyberjaya, Malaysia  
-Clinical Pharmacy · Clinical Data Analysis · Digital Health · Health Informatics · Real-World Evidence · Responsible AI in Healthcare
+PhD Researcher, University of Cyberjaya, Malaysia  
+Clinical Data Science · AI & Big Healthcare Data · Real-World Evidence · Precision Therapeutics
 
-[ORCID](https://orcid.org/0009-0000-3586-3242) · [Google Scholar](https://scholar.google.com/citations?user=swC2GY8AAAAJ) · [ResearchGate](https://www.researchgate.net/profile/Ahmed-Alaqab-2) · [LinkedIn](https://www.linkedin.com/in/ahmed-riyadh-alaqab-71377a25/) · [GitHub](https://github.com/ahmedalaqab33-source)
+[ORCID](https://orcid.org/0009-0000-3586-3242) · [Google Scholar](https://scholar.google.com/citations?user=swC2GY8AAAAJ) · [ResearchGate](https://www.researchgate.net/profile/Ahmed-Alaqab-2) · [LinkedIn](https://www.linkedin.com/in/ahmed-riyadh-alaqab-71377a25b/) · [GitHub](https://github.com/ahmedalaqab33-source)
 
 ## License
 
